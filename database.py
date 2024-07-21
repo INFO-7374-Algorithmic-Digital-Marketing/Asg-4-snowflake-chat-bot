@@ -36,3 +36,43 @@ def run_query(query):
 
 
 #############################################Query Template Functions####################################################
+import random
+def load_template(template_path):
+    with open(template_path, 'r') as file:
+        template = file.read()
+    return template
+
+# Function to generate and run the query with provided parameters
+def generate_and_run_query1(year, agg_field, state, limit):
+    # Load the query template
+    query_template = load_template('query_templates/query1.tpl')
+    
+    # Prepare the query by replacing placeholders
+    query = query_template.format(agg_field=agg_field, year=year, state=state, limit=limit)
+
+    # Run the query
+    results = run_query(query)
+    return results
+
+def generate_and_run_query2(year):
+    # Load the query template
+    query_template = load_template('query_templates/query2.tpl')
+    
+    # Prepare the query by replacing placeholders
+    query = query_template.format(year=year)
+
+    # Run the query
+    results = run_query(query)
+    return results
+
+# Function to generate and run the query with provided parameters
+def generate_and_run_query3(aggc, month, manufact, limit):
+    # Load the query template
+    query_template = load_template('query_templates/query3.tpl')
+    
+    # Prepare the query by replacing placeholders
+    query = query_template.format(aggc=aggc, month=month, manufact=manufact, limit=limit)
+
+    # Run the query
+    results = run_query(query)
+    return results
