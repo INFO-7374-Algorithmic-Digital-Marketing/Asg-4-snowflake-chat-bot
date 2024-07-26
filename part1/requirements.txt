@@ -1,0 +1,11 @@
+groq
+openai
+python-dotenv
+requests
+uvicorn
+fastapi
+streamlit
+snowflake-snowpark-python[pandas]
+pytest
+streamlit-option-menu
+snowflake-sqlalchemy
