@@ -43,7 +43,8 @@ def load_template(template_path):
     return template
 
 # Function to generate and run the query with provided parameters
-def generate_and_run_query1(year, agg_field, state, limit):
+def generate_and_run_query1(year=2000, agg_field="SR_RETURN_AMT", state="TN", limit=10):
+    query_template = load_template('query_templates/query1.tpl')
     # Load the query template
     query_template = load_template('query_templates/query1.tpl')
     
@@ -54,7 +55,7 @@ def generate_and_run_query1(year, agg_field, state, limit):
     # results = run_query(query)
     return query
 
-def generate_and_run_query2(year):
+def generate_and_run_query2(year=2001):
     # Load the query template
     query_template = load_template('query_templates/query2.tpl')
     
@@ -66,7 +67,7 @@ def generate_and_run_query2(year):
     return query
 
 # Function to generate and run the query with provided parameters
-def generate_and_run_query3(aggc, month, manufact, limit=10):
+def generate_and_run_query3(aggc="ss_ext_sales_price", month="11", manufact="128", limit=10):
     # Load the query template
     query_template = load_template('query_templates/query3.tpl')
     

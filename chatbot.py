@@ -12,7 +12,17 @@ with open(json_file_path, "r") as f:
 
 # query_metadata = json_content.dumps()
 
-def select_query_func(query_nuymber)
+#Func to execurte the correct function
+def execute_query_func(query_number, **params):
+    if query_number == 'query1.tpl':
+        return db.run_query(db.generate_and_run_query1(**params))
+    elif query_number == 'query2.tpl':
+        return db.run_query(db.generate_and_run_query2(**params))
+    elif query_number == 'query3.tpl':
+        return db.run_query(db.generate_and_run_query3(**params))
+    else:
+        raise ValueError(f"Invalid query number: {query_number}")
+    
 
 prompt_init = f'''Hello You are a chatbot acting as an interface between dataware house and user. 
                 Accoring to the prompt use the following information to select query most similar to user prompt: {query_data}. 
@@ -53,4 +63,5 @@ if prompt := st.chat_input("What is up?"):
     st.session_state.messages.append({"role": "assistant", "content": response})
     response = json.loads(response)
     query_number = response['query_number']
+    st.write(execute_query_func(query_number))
     # st.write(response['query_number'], response['query_params'])
