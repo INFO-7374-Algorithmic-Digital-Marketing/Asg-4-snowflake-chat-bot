@@ -1,0 +1,140 @@
+USE ROLE ACCOUNTADMIN;
+
+-- Create role and grant necessary privileges
+CREATE ROLE test_role;
+GRANT CREATE DATABASE ON ACCOUNT TO ROLE test_role;
+GRANT CREATE WAREHOUSE ON ACCOUNT TO ROLE test_role;
+GRANT CREATE INTEGRATION ON ACCOUNT TO ROLE test_role;
+
+-- Create database and warehouse
+CREATE DATABASE IF NOT EXISTS tutorial_db;
+GRANT OWNERSHIP ON DATABASE tutorial_db TO ROLE test_role COPY CURRENT GRANTS;
+
+CREATE OR REPLACE WAREHOUSE tutorial_warehouse WITH
+  WAREHOUSE_SIZE='X-SMALL';
+GRANT USAGE ON WAREHOUSE tutorial_warehouse TO ROLE test_role;
+
+-- Grant additional privileges
+GRANT BIND SERVICE ENDPOINT ON ACCOUNT TO ROLE test_role;
+GRANT CREATE COMPUTE POOL ON ACCOUNT TO ROLE test_role;
+
+-- Create compute pool
+CREATE COMPUTE POOL tutorial_compute_pool
+  MIN_NODES = 1
+  MAX_NODES = 1
+  INSTANCE_FAMILY = CPU_X64_XS;
+GRANT USAGE, MONITOR ON COMPUTE POOL tutorial_compute_pool TO ROLE test_role;
+
+GRANT ROLE test_role TO USER DEVESH12345;
+
+-- Switch to test_role and set up environment
+USE ROLE test_role;
+USE DATABASE tutorial_db;
+USE WAREHOUSE tutorial_warehouse;
+
+CREATE SCHEMA IF NOT EXISTS data_schema;
+CREATE IMAGE REPOSITORY IF NOT EXISTS tutorial_repository;
+CREATE STAGE IF NOT EXISTS tutorial_stage
+  DIRECTORY = ( ENABLE = true );
+
+-- Create network rule and secret
+CREATE OR REPLACE NETWORK RULE CHATGPT_NETWORK_RULE
+    MODE = EGRESS
+    TYPE = HOST_PORT
+    VALUE_LIST = ('api.openai.com');
+
+CREATE OR REPLACE SECRET CHATGPT_API_KEY
+    TYPE = GENERIC_STRING
+    SECRET_STRING='sk-proj-Ekar40n7vD2VeOy7fPnnT3BlbkFJobu29MW6FzHL6zpkPJhW';
+
+-- Create external access integration
+CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION OPENAI_INTEGRATION
+    ALLOWED_NETWORK_RULES = (CHATGPT_NETWORK_RULE)
+    ALLOWED_AUTHENTICATION_SECRETS = (CHATGPT_API_KEY)
+    ENABLED=TRUE;
+
+-- Create ChatGPT function
+CREATE OR REPLACE FUNCTION CHATGPT(prompt STRING)
+RETURNS STRING
+LANGUAGE PYTHON
+RUNTIME_VERSION=3.10
+HANDLER = 'ask_CHATGPT'
+EXTERNAL_ACCESS_INTEGRATIONS=(OPENAI_INTEGRATION)
+PACKAGES = ('openai')
+SECRETS = ('cred' = chatgpt_api_key)
+AS
+$$
+import _snowflake
+from openai import OpenAI
+client = OpenAI(
+    api_key=_snowflake.get_generic_secret_string("cred") )
+def ask_CHATGPT(prompt):
+    response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[{"role": "system", "content": f"{prompt}"}])
+    return response.choices[0].message.content
+$$;
+
+select chatGPT('Create a SQL statement to find all the stores that have more than 100 customers per day in Washington'); 
+
+-- Show resources
+SHOW COMPUTE POOLS;
+SHOW WAREHOUSES;
+SHOW IMAGE REPOSITORIES;
+SHOW STAGES;
+DESCRIBE COMPUTE POOL tutorial_compute_pool;
+SHOW IMAGES IN IMAGE REPOSITORY TUTORIAL_REPOSITORY;
+
+-- Create service
+CREATE SERVICE fastapiservice
+  IN COMPUTE POOL tutorial_compute_pool
+  FROM SPECIFICATION $$
+    spec:
+      containers:
+      - name: fastapi
+        image: /tutorial_db/data_schema/tutorial_repository/asg_4_image:v1
+        env:
+          SERVER_PORT: 8000
+        readinessProbe:
+          port: 8000
+          path: /docs
+      endpoints:
+      - name: fastapiendpoint
+        port: 8000
+        public: true
+  $$
+  MIN_INSTANCES=1
+  MAX_INSTANCES=1;
+
+-- Create UDF
+CREATE FUNCTION make_review_sample_udf(product_id VARCHAR)
+  RETURNS VARCHAR
+  SERVICE=fastapiservice
+  ENDPOINT=fastapiendpoint
+  AS '/make_review_sample';
+
+-- Show and describe service
+SHOW SERVICES;
+SELECT SYSTEM$GET_SERVICE_STATUS('fastapiservice');
+DESCRIBE SERVICE fastapiservice;
+
+-- Test UDF
+SELECT make_review_sample_udf('B07JW9H4J1');
+
+-- Get service logs
+SELECT SYSTEM$GET_SERVICE_LOGS('fastapiservice', '0', 'fastapi', 1000);
+
+-- Show endpoints
+SHOW ENDPOINTS IN SERVICE fastapiservice;
+
+-- Cleanup (uncomment when ready to remove everything)
+-- DROP SERVICE fastapiservice;
+-- USE ROLE ACCOUNTADMIN;
+-- ALTER COMPUTE POOL tutorial_compute_pool STOP ALL;
+-- DROP COMPUTE POOL tutorial_compute_pool;
+-- USE ROLE TEST_ROLE;
+-- DROP IMAGE REPOSITORY tutorial_repository;
+-- DROP STAGE tutorial_stage;
+-- DROP DATABASE TUTORIAL_DB;
+-- USE ROLE ACCOUNTADMIN;
+-- DROP ROLE TEST_ROLE;

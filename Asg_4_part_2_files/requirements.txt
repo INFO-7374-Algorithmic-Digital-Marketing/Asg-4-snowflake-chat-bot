@@ -4,3 +4,8 @@ faker
 uvicorn
 fastapi
 requests
+snowflake-sqlalchemy
+openai
+groq
+streamlit
+snowflake-snowpark-python[pandas]

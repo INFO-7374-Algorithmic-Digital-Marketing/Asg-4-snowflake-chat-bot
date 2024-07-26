@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Optional
-from database import run_query
-from llm_callers import OpenAICaller
+from Asg_4_part_2_files.utils.database_utils import run_query
+from Asg_4_part_2_files.utils.llm_caller_utils import OpenAICaller
 
 def make_review_function(product_id):
     # Run query to get all reviews for this product
