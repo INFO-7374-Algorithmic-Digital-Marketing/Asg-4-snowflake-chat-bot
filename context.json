@@ -31,5 +31,16 @@
             "YEAR=2001",
             "SELECTONE=t_s_secyear.customer_preferred_cust_flag"
         ]
+    }, 
+    {
+        "query_description": "Find average quantities, list prices, coupon amounts, and sales prices for items sold to customers with specific demographics in a given year.",
+        "query_number": "query7.tpl",
+        "query_params": [
+            "GEN=M",
+            "MS=S",
+            "ES=College",
+            "YEAR=2002",
+            "LIMIT=100"
+        ]
     }
 ]

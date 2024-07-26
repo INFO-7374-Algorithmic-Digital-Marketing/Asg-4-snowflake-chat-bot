@@ -22,6 +22,8 @@ def execute_query_func(query_number, params):
         return db.run_query(db.generate_and_run_query3(**params))
     elif query_number == 'query4.tpl':
         return db.run_query(db.generate_and_run_query4(**params))
+    elif query_number == 'query7.tpl':
+        return db.run_query(db.generate_and_run_query7(**params))
     else:
         raise ValueError(f"Invalid query number: {query_number}")
     

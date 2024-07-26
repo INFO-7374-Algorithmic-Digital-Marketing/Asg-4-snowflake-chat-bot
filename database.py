@@ -88,3 +88,15 @@ def generate_and_run_query4(YEAR, SELECTONE, LIMIT=10):
     # Run the query
     results = run_query(query)
     return results
+
+# Function to generate and run the query with provided parameters
+def generate_and_run_query7(GEN, MS, ES, YEAR, LIMIT):
+    # Load the query template
+    query_template = load_template('query_templates/query7.tpl')
+    
+    # Prepare the query by replacing placeholders
+    query = query_template.format(gen=GEN, ms=MS, es=ES, year=YEAR, limit=LIMIT)
+
+    # Run the query
+    results = run_query(query)
+    return results
