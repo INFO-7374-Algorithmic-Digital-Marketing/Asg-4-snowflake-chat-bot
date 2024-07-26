@@ -24,10 +24,19 @@ def execute_query_func(query_number, **params):
         raise ValueError(f"Invalid query number: {query_number}")
     
 
-prompt_init = f'''Hello You are a chatbot acting as an interface between dataware house and user. 
-                Accoring to the prompt use the following information to select query most similar to user prompt: {query_data}. 
-                If value of the query parameters is given then use that value in the outpu otherwise use the default value.
-                Return the query number and the value for query parameters in a json format.
+prompt_init = '''Hello You are a chatbot acting as an interface between datawarehoue and user. 
+                Accoring to following information to select query most similar to user prompt: {query_data}. 
+                If value of the query parameters is in the prompt then use that value in the output otherwise use the default value.
+                Return the query number and the value for query parameters in a json format. A sample output is as follows:
+                {
+                    "query_number": "query1.tpl",
+                    "query_params": {
+                        "YEAR": 2000,
+                        "AGG_FIELD": "SR_RETURN_AMT",
+                        "STATE": "TN",
+                        "LIMIT": 10
+                    }
+                }
                 '''
 
 if "openai_model" not in st.session_state:
@@ -63,5 +72,7 @@ if prompt := st.chat_input("What is up?"):
     st.session_state.messages.append({"role": "assistant", "content": response})
     response = json.loads(response)
     query_number = response['query_number']
+    query_params = response['query_params']
+    print(query_params)
     st.write(execute_query_func(query_number))
     # st.write(response['query_number'], response['query_params'])

@@ -42,37 +42,73 @@ def load_template(template_path):
         template = file.read()
     return template
 
-# Function to generate and run the query with provided parameters
-def generate_and_run_query1(year=2000, agg_field="SR_RETURN_AMT", state="TN", limit=10):
+# # Function to generate and run the query with provided parameters
+# def generate_and_run_query1(year=2000, agg_field="SR_RETURN_AMT", state="TN", limit=10):
+#     query_template = load_template('query_templates/query1.tpl')
+#     # Load the query template
+#     query_template = load_template('query_templates/query1.tpl')
+    
+#     # Prepare the query by replacing placeholders
+#     query = query_template.format(agg_field=agg_field, year=year, state=state, limit=limit)
+
+#     # Run the query
+#     # results = run_query(query)
+#     return query
+
+# def generate_and_run_query2(year=2001):
+#     # Load the query template
+#     query_template = load_template('query_templates/query2.tpl')
+    
+#     # Prepare the query by replacing placeholders
+#     query = query_template.format(year=year)
+
+#     # Run the query
+#     # results = run_query(query)
+#     return query
+
+# # Function to generate and run the query with provided parameters
+# def generate_and_run_query3(aggc="ss_ext_sales_price", month="11", manufact="128", limit=10):
+#     # Load the query template
+#     query_template = load_template('query_templates/query3.tpl')
+    
+#     # Prepare the query by replacing placeholders
+#     query = query_template.format(aggc=aggc, month=month, manufact=manufact, limit=limit)
+
+#     # Run the query
+#     # results = run_query(query)
+#     return query
+
+
+def generate_and_run_query1(YEAR=2000, AGG_FIELD="SR_RETURN_AMT", STATE="TN", LIMIT=10):
     query_template = load_template('query_templates/query1.tpl')
     # Load the query template
     query_template = load_template('query_templates/query1.tpl')
     
     # Prepare the query by replacing placeholders
-    query = query_template.format(agg_field=agg_field, year=year, state=state, limit=limit)
+    query = query_template.format(agg_field=AGG_FIELD, year=YEAR, state=STATE, limit=LIMIT)
 
     # Run the query
     # results = run_query(query)
     return query
 
-def generate_and_run_query2(year=2001):
+def generate_and_run_query2(YEAR=2001):
     # Load the query template
     query_template = load_template('query_templates/query2.tpl')
     
     # Prepare the query by replacing placeholders
-    query = query_template.format(year=year)
+    query = query_template.format(year=YEAR)
 
     # Run the query
     # results = run_query(query)
     return query
 
 # Function to generate and run the query with provided parameters
-def generate_and_run_query3(aggc="ss_ext_sales_price", month="11", manufact="128", limit=10):
+def generate_and_run_query3(AGGC="ss_ext_sales_price", MONTH="11", MANUFACT="128", LIMIT=10):
     # Load the query template
     query_template = load_template('query_templates/query3.tpl')
     
     # Prepare the query by replacing placeholders
-    query = query_template.format(aggc=aggc, month=month, manufact=manufact, limit=limit)
+    query = query_template.format(aggc=AGGC, month=MONTH, manufact=MANUFACT, limit=LIMIT)
 
     # Run the query
     # results = run_query(query)
