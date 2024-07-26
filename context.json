@@ -23,5 +23,13 @@
             "MANUFACT=128",
             "AGGC=ss_ext_sales_price"
         ]
+    },
+    {
+        "query_description": "Find customers who spend more money via catalog than in stores. Identify preferred customers and their country of origin.",
+        "query_number": "query4.tpl",
+        "query_params": [
+            "YEAR=2001",
+            "SELECTONE=t_s_secyear.customer_preferred_cust_flag"
+        ]
     }
 ]

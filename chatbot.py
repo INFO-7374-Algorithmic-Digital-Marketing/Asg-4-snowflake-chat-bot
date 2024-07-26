@@ -3,7 +3,7 @@ import streamlit as st
 import database as db
 import json
 
-st.title("Course Assistant")
+st.title("SQL Chatbot")
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 json_file_path = "context.json"
@@ -13,21 +13,23 @@ with open(json_file_path, "r") as f:
 # query_metadata = json_content.dumps()
 
 #Func to execurte the correct function
-def execute_query_func(query_number, **params):
+def execute_query_func(query_number, params):
     if query_number == 'query1.tpl':
         return db.run_query(db.generate_and_run_query1(**params))
     elif query_number == 'query2.tpl':
         return db.run_query(db.generate_and_run_query2(**params))
     elif query_number == 'query3.tpl':
         return db.run_query(db.generate_and_run_query3(**params))
+    elif query_number == 'query4.tpl':
+        return db.run_query(db.generate_and_run_query4(**params))
     else:
         raise ValueError(f"Invalid query number: {query_number}")
     
 
-prompt_init = '''Hello You are a chatbot acting as an interface between datawarehoue and user. 
+prompt_init = f'''Hello You are a chatbot acting as an interface between datawarehoue and user. 
                 Accoring to following information to select query most similar to user prompt: {query_data}. 
                 If value of the query parameters is in the prompt then use that value in the output otherwise use the default value.
-                Return the query number and the value for query parameters in a json format. A sample output is as follows:
+                Return the query number and the value for query parameters in a json format. A sample output is as follows:''' + '''
                 {
                     "query_number": "query1.tpl",
                     "query_params": {
@@ -74,5 +76,5 @@ if prompt := st.chat_input("What is up?"):
     query_number = response['query_number']
     query_params = response['query_params']
     print(query_params)
-    st.write(execute_query_func(query_number))
+    st.write(execute_query_func(query_number, query_params))
     # st.write(response['query_number'], response['query_params'])
